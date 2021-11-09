@@ -1,0 +1,3 @@
+FROM myelintek/pytorch-rocm:1.0
+
+ADD . /mlsteam/lab
