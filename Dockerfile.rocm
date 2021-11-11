@@ -1,3 +1,4 @@
 FROM myelintek/pytorch-rocm:1.0
 
 ADD . /mlsteam/lab
+RUN rm -rf /mlsteam/lab/.git
