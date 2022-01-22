@@ -50,11 +50,13 @@ from utils.loggers.wandb.wandb_utils import check_wandb_resume
 from utils.metrics import fitness
 from utils.loggers import Loggers
 from utils.callbacks import Callbacks
+import mlsteam
 
 LOGGER = logging.getLogger(__name__)
 LOCAL_RANK = int(os.getenv('LOCAL_RANK', -1))  # https://pytorch.org/docs/stable/elastic/run.html
 RANK = int(os.getenv('RANK', -1))
 WORLD_SIZE = int(os.getenv('WORLD_SIZE', 1))
+track = mlsteam.init()
 
 
 def train(hyp,  # path/to/hyp.yaml or hyp dictionary
@@ -76,14 +78,16 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         with open(hyp, errors='ignore') as f:
             hyp = yaml.safe_load(f)  # load hyps dict
     LOGGER.info(colorstr('hyperparameters: ') + ', '.join(f'{k}={v}' for k, v in hyp.items()))
-
+    for k, v in hyp.items():
+        track[f"hyperparameters/{k}"] = v
     # Save run settings
     with open(save_dir / 'hyp.yaml', 'w') as f:
         yaml.safe_dump(hyp, f, sort_keys=False)
     with open(save_dir / 'opt.yaml', 'w') as f:
         yaml.safe_dump(vars(opt), f, sort_keys=False)
     data_dict = None
-
+    track["batch_size"] = batch_size
+    track["data"] = data
     # Loggers
     if RANK in [-1, 0]:
         loggers = Loggers(save_dir, weights, opt, hyp, LOGGER)  # loggers instance
@@ -343,6 +347,9 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                 pbar.set_description(('%10s' * 2 + '%10.4g' * 5) % (
                     f'{epoch}/{epochs - 1}', mem, *mloss, targets.shape[0], imgs.shape[-1]))
                 callbacks.run('on_train_batch_end', ni, model, imgs, targets, paths, plots, opt.sync_bn)
+                track['train/batch_mloss'].log(mloss)
+                track['train/batch_mem'].log(mem)
+
             # end batch ------------------------------------------------------------------------------------------------
 
         # Scheduler
@@ -372,7 +379,8 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                 best_fitness = fi
             log_vals = list(mloss) + list(results) + lr
             callbacks.run('on_fit_epoch_end', log_vals, epoch, best_fitness, fi)
-
+            track['val/epoch_mAP50'].log(list(results)[2])
+            track['val/epoch_mAP95'].log(list(results)[3])
             # Save model
             if (not nosave) or (final_epoch and not evolve):  # if save
                 ckpt = {'epoch': epoch,
@@ -600,7 +608,6 @@ def main(opt, callbacks=Callbacks()):
                 hyp[k] = max(hyp[k], v[1])  # lower limit
                 hyp[k] = min(hyp[k], v[2])  # upper limit
                 hyp[k] = round(hyp[k], 5)  # significant digits
-
             # Train mutation
             results = train(hyp.copy(), opt, device, callbacks)
 
