@@ -172,6 +172,7 @@ def is_chinese(s='人工智能'):
     return re.search('[\u4e00-\u9fff]', s)
 
 
+@try_except
 def emojis(str=''):
     # Return platform-dependent emoji-safe version of string
     return str.encode().decode('ascii', 'ignore') if platform.system() == 'Windows' else str
