@@ -4,7 +4,8 @@ on:
     types: [published]
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ws1
+    # runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Get the version
@@ -12,10 +13,17 @@ jobs:
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
       - name: Print the tag version
         run: echo ${{ steps.get_version.outputs.VERSION }}
+      # - name: Build the ROCM version Docker image
+      #   run: DOCKER_BUILDKIT=1 docker build . --file Dockerfile.rocm --tag myelintek/yolov5-rocm:${{ steps.get_version.outputs.VERSION }}
+      # - name: push to docker hub
+      #   run: |
+      #     docker login --username ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
+      #     docker push myelintek/yolov5-rocm:${{ steps.get_version.outputs.VERSION }}
+      #     docker logout
       - name: Build the ROCM version Docker image
-        run: DOCKER_BUILDKIT=1 docker build . --file Dockerfile.rocm --tag myelintek/yolov5-rocm:${{ steps.get_version.outputs.VERSION }}
-      - name: push to docker hub
+        run: DOCKER_BUILDKIT=1 docker build . --file Dockerfile.rocm --tag cr.myelintek.com/myelintek/yolov5-rocm:${{ steps.get_version.outputs.VERSION }}
+      - name: push to MyelinTek
         run: |
-          docker login --username ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
-          docker push myelintek/yolov5-rocm:${{ steps.get_version.outputs.VERSION }}
-          docker logout
+          docker login -u 'robot$github' -p ${{ secrets.CR_TOKEN }} cr.myelintek.com
+          docker push cr.myelintek.com/myelintek/yolov5-rocm:${{ steps.get_version.outputs.VERSION }}
+          docker logout cr.myelintek.com
