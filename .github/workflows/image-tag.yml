@@ -4,7 +4,7 @@ on:
     types: [published]
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ws1
     steps:
       - uses: actions/checkout@v2
       - name: Get the version
