@@ -11,11 +11,15 @@ jobs:
     runs-on: ws1
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
+    - name: Build the ROCM version Docker image
       run: DOCKER_BUILDKIT=1 docker build . --file Dockerfile.rocm --tag cr.myelintek.com/myelintek/yolov5-rocm:latest
+    - name: Build the Docker image
+      run: DOCKER_BUILDKIT=1 docker build . --file Dockerfile --tag cr.myelintek.com/myelintek/yolov5:latest
     - name: push to MyelinTek
       run: |
         docker login -u 'robot$github' -p ${{ secrets.CR_TOKEN }} cr.myelintek.com
         docker push cr.myelintek.com/myelintek/yolov5-rocm:latest
+        docker push cr.myelintek.com/myelintek/yolov5:latest
         docker logout cr.myelintek.com
-        docker rmi cr.myelintek.com/myelintek/yolov5-rocm:latest 
+        docker rmi cr.myelintek.com/myelintek/yolov5-rocm:latest
+        docker rmi cr.myelintek.com/myelintek/yolov5:latest
