@@ -12,10 +12,13 @@ jobs:
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
       - name: Print the tag version
         run: echo ${{ steps.get_version.outputs.VERSION }}
-      - name: Build the Docker image
+      - name: Build the ROCM version Docker image
         run: DOCKER_BUILDKIT=1 docker build . --file Dockerfile.rocm --tag myelintek/yolov5-rocm:${{ steps.get_version.outputs.VERSION }}
+      - name: Build the Docker image
+        run: DOCKER_BUILDKIT=1 docker build . --file Dockerfile --tag myelintek/yolov5:${{ steps.get_version.outputs.VERSION }}
       - name: push to docker hub
         run: |
           docker login --username ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
           docker push myelintek/yolov5-rocm:${{ steps.get_version.outputs.VERSION }}
+          docker push myelintek/yolov5:${{ steps.get_version.outputs.VERSION }}
           docker logout
