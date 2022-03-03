@@ -89,6 +89,7 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     for k, v in hyp.items():
         track[f"hyperparameters/{k}"] = v
 
+    track["epochs"] = epochs
     track["batch_size"] = batch_size
     track["data"] = data
 

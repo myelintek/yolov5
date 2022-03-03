@@ -37,3 +37,6 @@ thop  # FLOPs computation
 
 # MLSTEAM -------------------------------------
 mlsteam-client
+
+# Service -------------------------------------
+streamlit
