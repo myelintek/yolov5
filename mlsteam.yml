@@ -1,0 +1,96 @@
+command: python3 train.py
+params:
+  artifact_alias: latest
+  batch_size: 16
+  bbox_interval: -1
+  bucket: ""
+  cache: ~
+  cfg: ""
+  cos_lr: true
+  data: /mlsteam/data/coco128.yaml
+  device: ""
+  entity: ~
+  epochs: 3
+  evolve: ~
+  exist_ok: false
+  freeze: 0
+  hyp: /mlsteam/data/hyps/hyp.scratch-low.yaml
+  image_weights: false
+  imgsz: 640
+  label_smoothing: 0.0
+  local_rank: -1
+  multi_scale: false
+  name: exp
+  noautoanchor: false
+  nosave: false
+  noval: false
+  optimizer: SGD
+  patience: 100
+  project: /mlsteam/output/train
+  quad: false
+  rect: false
+  resume: false
+  save_period: -1
+  single_cls: false
+  sync_bn: false
+  upload_dataset: false
+  weights: /mlsteam/data/yolov5s.pt
+  worker: 8
+params_definition:
+  cos_lr:
+    options:
+    - true
+    - false
+  exist_ok:
+    options:
+    - true
+    - false
+  image_weights:
+    options:
+    - true
+    - false
+  multi_scale:
+    options:
+    - true
+    - false
+  noautoanchor:
+    options:
+    - true
+    - false
+  nosave:
+    options:
+    - true
+    - false
+  noval:
+    options:
+    - true
+    - false
+  quad:
+    options:
+    - true
+    - false
+  rect:
+    options:
+    - true
+    - false
+  resume:
+    options:
+    - true
+    - false
+  single_cls:
+    options:
+    - true
+    - false
+  sync_bn:
+    options:
+    - true
+    - false
+  upload_dataset:
+    options:
+    - true
+    - false
+  optimizer:
+    options:
+    - SGD
+    - Adam
+    - AdamW

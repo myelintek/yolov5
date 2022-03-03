@@ -61,6 +61,11 @@ LOCAL_RANK = int(os.getenv('LOCAL_RANK', -1))  # https://pytorch.org/docs/stable
 RANK = int(os.getenv('RANK', -1))
 WORLD_SIZE = int(os.getenv('WORLD_SIZE', 1))
 
+import mlsteam
+from mlsteam import stparams
+
+track = mlsteam.init()
+
 
 def train(hyp,  # path/to/hyp.yaml or hyp dictionary
           opt,
@@ -81,6 +86,11 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
         with open(hyp, errors='ignore') as f:
             hyp = yaml.safe_load(f)  # load hyps dict
     LOGGER.info(colorstr('hyperparameters: ') + ', '.join(f'{k}={v}' for k, v in hyp.items()))
+    for k, v in hyp.items():
+        track[f"hyperparameters/{k}"] = v
+
+    track["batch_size"] = batch_size
+    track["data"] = data
 
     # Save run settings
     if not evolve:
@@ -353,6 +363,8 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                 pbar.set_description(('%10s' * 2 + '%10.4g' * 5) % (
                     f'{epoch}/{epochs - 1}', mem, *mloss, targets.shape[0], imgs.shape[-1]))
                 callbacks.run('on_train_batch_end', ni, model, imgs, targets, paths, plots, opt.sync_bn)
+                track['train/batch_mloss'].log(mloss)
+                track['train/batch_mem'].log(mem)
                 if callbacks.stop_training:
                     return
             # end batch ------------------------------------------------------------------------------------------------
@@ -384,6 +396,8 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
                 best_fitness = fi
             log_vals = list(mloss) + list(results) + lr
             callbacks.run('on_fit_epoch_end', log_vals, epoch, best_fitness, fi)
+            track['val/epoch_mAP50'].log(list(results)[2])
+            track['val/epoch_mAP95'].log(list(results)[3])
 
             # Save model
             if (not nosave) or (final_epoch and not evolve):  # if save
@@ -640,4 +654,6 @@ def run(**kwargs):
 
 if __name__ == "__main__":
     opt = parse_opt()
+    for key, value in opt._get_kwargs():
+        setattr(opt, key, stparams.get_value(key, value))
     main(opt)
