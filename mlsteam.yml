@@ -1,8 +1,11 @@
 command: python3 train.py
 params:
-  batch_size: 16
-  epochs: 3
-  optimizer: SGD
+  batch_size: 
+  - 16
+  epochs: 
+  - 3
+  optimizer: 
+  - SGD
 params_definition:
   optimizer:
     options:
