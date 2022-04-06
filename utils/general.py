@@ -430,8 +430,9 @@ def check_dataset(data, autodownload=True):
                 root = path.parent if 'path' in data else '..'  # unzip directory i.e. '../'
                 if s.startswith('http') and s.endswith('.zip'):  # URL
                     f = Path(s).name  # filename
-                    LOGGER.info(f'Downloading {s} to {f}...')
-                    torch.hub.download_url_to_file(s, f)
+                    if not Path(f).exists():
+                        LOGGER.info(f'Downloading {s} to {f}...')
+                        torch.hub.download_url_to_file(s, f)
                     Path(root).mkdir(parents=True, exist_ok=True)  # create root
                     ZipFile(f).extractall(path=root)  # unzip
                     Path(f).unlink()  # remove zip
