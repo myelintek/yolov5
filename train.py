@@ -133,7 +133,8 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     if pretrained:
         with torch_distributed_zero_first(LOCAL_RANK):
             local_weights = Path('.') / Path(weights).name
-            if local_weights.exists():
+            weights_file = Path(str(weights).strip().replace("'", ''))
+            if not weights_file.exists() and local_weights.exists():
                 shutil.copyfile(local_weights, weights)
             else:
                 weights = attempt_download(weights)  # download if not found locally
