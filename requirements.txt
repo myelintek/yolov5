@@ -40,3 +40,7 @@ mlsteam-client
 
 # Service -------------------------------------
 streamlit
+youtube-dl
+pafy
+av
+streamlit-webrtc
