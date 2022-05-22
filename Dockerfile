@@ -1,7 +1,7 @@
 # YOLOv5 🚀 by Ultralytics, GPL-3.0 license
 
 # Start FROM Nvidia PyTorch image https://ngc.nvidia.com/catalog/containers/nvidia:pytorch
-FROM myelintek/yolov5:v6.1-mls-1.0.1
+FROM myelintek/yolov5:v6.1-mls-1.0.2
 
 ENV SHELL /bin/bash
 
