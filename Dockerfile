@@ -1,7 +1,7 @@
 # YOLOv5 🚀 by Ultralytics, GPL-3.0 license
 
 # Start FROM Nvidia PyTorch image https://ngc.nvidia.com/catalog/containers/nvidia:pytorch
-FROM myelintek/yolov5:v6.1-mls-1.0.1
+FROM myelintek/yolov5:v6.1-mls-1.0.2
 
 ENV SHELL /bin/bash
 
@@ -15,6 +15,9 @@ ENV SHELL /bin/bash
 #RUN pip install --no-cache -r requirements.txt albumentations wandb gsutil notebook \
 #    torch==1.10.2+cu113 torchvision==0.11.3+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
 # RUN pip install --no-cache -U torch torchvision
+RUN pip install -U streamlit-webrtc av pafy youtube-dl
+# patch issue
+RUN sed -i '/self._dislikes = /d' /opt/conda/lib/python3.8/site-packages/pafy/backend_youtube_dl.py
 
 # Create working directory
 RUN mkdir -p /mlsteam/lab
