@@ -15,7 +15,7 @@ ENV SHELL /bin/bash
 #RUN pip install --no-cache -r requirements.txt albumentations wandb gsutil notebook \
 #    torch==1.10.2+cu113 torchvision==0.11.3+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
 # RUN pip install --no-cache -U torch torchvision
-RUN pip install -U streamlit-webrtc av pafy youtube-dl
+RUN pip install -U streamlit-webrtc av pafy youtube-dl mlsteam-client>=0.4.7
 # patch issue
 RUN sed -i '/self._dislikes = /d' /opt/conda/lib/python3.8/site-packages/pafy/backend_youtube_dl.py
 
