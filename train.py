@@ -86,8 +86,8 @@ def train(hyp,  # path/to/hyp.yaml or hyp dictionary
     with open(save_dir / 'opt.yaml', 'w') as f:
         yaml.safe_dump(vars(opt), f, sort_keys=False)
     data_dict = None
-    track["batch_size"] = batch_size
-    track["data"] = data
+    track["hyperparameters/batch_size"] = batch_size
+    track["hyperparameters/data"] = data
     # Loggers
     if RANK in [-1, 0]:
         loggers = Loggers(save_dir, weights, opt, hyp, LOGGER)  # loggers instance
